@@ -2,5 +2,6 @@
 # Simplex Encoding
 Main changes this repo aim to introduce is simplex encoding as implemented in https://github.com/zang-lab/SELMA.
 
+# Change log
 
 
