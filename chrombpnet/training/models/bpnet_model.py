@@ -36,7 +36,7 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
     rn.seed(seed)
 
     #define inputs
-    inp = Input(shape=(sequence_len, 4),name='sequence')    
+    inp = Input(shape=(sequence_len, 3),name='sequence')    
 
     # first convolution without dilation
     x = Conv1D(filters,
