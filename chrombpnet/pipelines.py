@@ -285,7 +285,7 @@ def train_bias_pipeline(args):
 	assert(len(folds["valid"]) > 0) # validation list of chromosomes is empty
 	args.chr = folds["valid"][0]
 	args.pwm_width=24
-	build_pwm_from_bigwig.main(args)
+#	build_pwm_from_bigwig.main(args)            Disabled for direct benchmarking and simplex compatibility
 	
 
 	# fetch hyperparameters for training

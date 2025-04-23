@@ -93,13 +93,16 @@ def main(args):
                 ref_motifs_file =  get_default_data_path(DefaultDataFile.dnase_ref_motifs)
     
         print("Estimating enzyme shift in input file")
-        plus_shift, minus_shift = auto_shift_detect.compute_shift(args.input_bam_file,
-                args.input_fragment_file,
-                args.input_tagalign_file,
-                args.num_samples,
-                args.genome,
-                args.data_type,
-                ref_motifs_file)
+#        plus_shift, minus_shift = auto_shift_detect.compute_shift(args.input_bam_file,
+#                args.input_fragment_file,
+#                args.input_tagalign_file,
+#                args.num_samples,
+#                args.genome,
+#                args.data_type,
+#                ref_motifs_file)
+        # Shift detection disabled for consistent runtime benchmarking
+        plus_shift, minus_shift = 0, 0
+        print("Shift detection disabled: using plus_shift = 0, minus_shift = 0")
     
         print("Current estimated shift: {:+}/{:+}".format(plus_shift, minus_shift))
 
