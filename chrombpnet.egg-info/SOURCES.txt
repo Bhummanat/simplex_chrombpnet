@@ -73,6 +73,8 @@ chrombpnet/training/data_generators/batchgen_generator.py
 chrombpnet/training/data_generators/initializers.py
 chrombpnet/training/models/__init__.py
 chrombpnet/training/models/bpnet_model.py
+chrombpnet/training/models/bpnet_model_OLD_original.py
+chrombpnet/training/models/bpnet_model_leakyReLU.py
 chrombpnet/training/models/chrombpnet_with_bias_model.py
 chrombpnet/training/utils/__init__.py
 chrombpnet/training/utils/argmanager.py

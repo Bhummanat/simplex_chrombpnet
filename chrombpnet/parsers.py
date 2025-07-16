@@ -120,6 +120,7 @@ def read_parser():
         optional_main_parser.add_argument("-dil", "--n-dilation-layers", type=int, default=8, help="Number of dilation layers to use in chrombpnet model")
         optional_main_parser.add_argument("-j", "--max-jitter", type=int, default=500, help="Maximum jitter applied on either side of region (default 500 for chrombpnet model)")
         optional_main_parser.add_argument("-bs", "--batch-size", type=int, default=64, help="batch size to use for model training")
+        optional_main_parser.add_argument("--encoding-method", type=str, choices=["one_hot", "simplex_monomer", "simplex_dimer"], default="one_hot", help="Encoding scheme to use for input sequences")
  
          # chrombpnet pipeline arguments
 		
@@ -185,6 +186,8 @@ def read_parser():
         optional_biast_parser.add_argument("-dil", "--n-dilation-layers", type=int, default=4, help="Number of dilation layers to use in chrombpnet model")
         optional_biast_parser.add_argument("-j", "--max-jitter", type=int, default=0, help="Maximum jitter applied on either side of region (default 500 for chrombpnet model)")
         optional_biast_parser.add_argument("-bs", "--batch-size", type=int, default=64, help="batch size to use for model training")
+        optional_biast_parser.add_argument("--encoding-method", type=str, choices=["one_hot", "simplex_monomer", "simplex_dimer"], default="one_hot", help="Encoding scheme to use for input sequences")
+
  
        # bias model qc arguments
 
@@ -224,6 +227,8 @@ def read_parser():
         optional_preds.add_argument("-t", "--tqdm", type=int,default=1, help="Use tqdm. If yes then you need to have it installed.")
         optional_preds.add_argument("-d", "--debug-chr", nargs="+", type=str, default=None, help="Run for specific chromosomes only (e.g. chr1 chr2) for debugging")
         optional_preds.add_argument("-bw", "--bigwig", type=str, default=None, help="If provided .h5 with predictions are output along with calculated metrics considering bigwig as groundtruth.")
+        optional_preds.add_argument("--encoding-method", type=str, choices=["one_hot", "simplex_monomer", "simplex_dimer"], default="one_hot", help="Encoding scheme to use for input sequences")
+
        
         # Make contribution score bigwigs
         

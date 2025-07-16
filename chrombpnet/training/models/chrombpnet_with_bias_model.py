@@ -24,14 +24,26 @@ def load_pretrained_bias(model_hdf5):
     return pretrained_bias_model
 
 
-def bpnet_model(filters, n_dil_layers, sequence_len, out_pred_len):
+def bpnet_model(filters, n_dil_layers, sequence_len, out_pred_len, model_params):
 
     conv1_kernel_size=21
     profile_kernel_size=75
     num_tasks=1 # not using multi tasking
 
     #define inputs
-    inp = Input(shape=(sequence_len - 1, 15),name='sequence')    
+    encoding_method = model_params.get("encoding_method", "one_hot")
+    
+    if encoding_method == "one_hot":
+        input_shape = (sequence_len, 4)
+    elif encoding_method == "simplex_monomer":
+        input_shape = (sequence_len, 3)
+    elif encoding_method == "simplex_dimer":
+        input_shape = (sequence_len - 1, 15)
+    else:
+        raise ValueError(f"Unknown encoding method: {encoding_method}")
+    
+    inp = Input(shape=input_shape, name='sequence')
+  
 
     # first convolution without dilation
     x = Conv1D(filters,
@@ -101,7 +113,7 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
 
 
     bias_model = load_pretrained_bias(bias_model_path)
-    bpnet_model_wo_bias = bpnet_model(filters, n_dil_layers, sequence_len, out_pred_len)
+    bpnet_model_wo_bias = bpnet_model(filters, n_dil_layers, sequence_len, out_pred_len, model_params)
 
     #read in arguments
     seed=args.seed
@@ -109,7 +121,19 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
     tf.random.set_seed(seed)
     rn.seed(seed)
     
-    inp = Input(shape=(sequence_len - 1, 15),name='sequence')    
+    encoding_method = model_params.get("encoding_method", "one_hot")
+    
+    if encoding_method == "one_hot":
+        input_shape = (sequence_len, 4)
+    elif encoding_method == "simplex_monomer":
+        input_shape = (sequence_len, 3)
+    elif encoding_method == "simplex_dimer":
+        input_shape = (sequence_len - 1, 15)
+    else:
+        raise ValueError(f"Unknown encoding method: {encoding_method}")
+    
+    inp = Input(shape=input_shape, name='sequence')
+
 
     ## get bias output
     bias_output=bias_model(inp)

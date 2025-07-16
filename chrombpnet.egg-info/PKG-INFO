@@ -1,4 +1,4 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: chrombpnet
 Version: 0.1.7
 Summary: chrombpnet predicts chromatin accessibility from sequence
@@ -26,3 +26,10 @@ Requires-Dist: modisco==0.5.16.0
 Requires-Dist: modisco-lite==2.0.7
 Requires-Dist: weasyprint==52.5
 Requires-Dist: kundajelab-shap==1
+Dynamic: author-email
+Dynamic: download-url
+Dynamic: license
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

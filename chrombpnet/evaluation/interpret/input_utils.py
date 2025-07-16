@@ -10,7 +10,7 @@ from tensorflow.keras.utils import get_custom_objects
 from tensorflow.keras.models import load_model
 
 
-def get_seq(peaks_df, genome, width):
+def get_seq(peaks_df, genome, width, encoding_method="one_hot"):
     """
     Same as get_cts, but fetches sequence from a given genome.
     """
@@ -24,7 +24,7 @@ def get_seq(peaks_df, genome, width):
         else:
             peaks_used.append(False)
 
-    return one_hot.dna_to_one_hot(vals), np.array(peaks_used)
+    return one_hot.encode_sequence(vals, method=encoding_method), np.array(peaks_used)
 
 
 def load_model_wrapper(args):

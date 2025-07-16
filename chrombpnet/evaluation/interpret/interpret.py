@@ -28,6 +28,7 @@ def fetch_interpret_args():
     parser.add_argument("-d", "--debug_chr", nargs="+", type=str, default=None, help="Run for specific chromosomes only (e.g. chr1 chr2) for debugging")
     parser.add_argument("-p", "--profile_or_counts", nargs="+", type=str, default=["counts", "profile"], choices=["counts", "profile"],
                         help="use either counts or profile or both for running shap")
+    parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choices=["one_hot", "simplex-mono", "simplex-dimer"], help="Encoding method for input DNA sequences")
 
     args = parser.parse_args()
     return args
@@ -124,7 +125,7 @@ def main(args):
     #       centered at the summit (start + 10th column) and peaks used after filtering
 
     genome = pyfaidx.Fasta(args.genome)
-    seqs, peaks_used = input_utils.get_seq(regions_df, genome, inputlen)
+    seqs, peaks_used = input_utils.get_seq(regions_df, genome, inputlen, encoding_method=args.encoding_method)
     genome.close()
 
     regions_df[peaks_used].to_csv("{}.interpreted_regions.bed".format(args.output_prefix), header=False, index=False, sep='\t')

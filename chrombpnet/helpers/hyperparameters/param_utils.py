@@ -39,10 +39,10 @@ def filter_edge_regions(peaks_df, bw, width, peaks_bool):
         print("Number of non peaks being used: ",peaks_df.shape[0])
     return peaks_df
 
-def get_seqs_cts(genome, bw, peaks_df, input_width=2114, output_width=1000):
+def get_seqs_cts(genome, bw, peaks_df, input_width=2114, output_width=1000, encoding_method="one_hot"):
     """
     Output counts (not log counts)
-    Output one-hot encoded sequence
+    Output encoded sequence based on previded encoding_method
     """
     vals = []
     seqs = []
@@ -53,7 +53,8 @@ def get_seqs_cts(genome, bw, peaks_df, input_width=2114, output_width=1000):
                             (r['start'] + r['summit']) - output_width//2,
                             (r['start'] + r['summit']) + output_width//2))
         vals.append(bigwig_vals)
-    return (np.sum(np.array(vals),axis=1), one_hot.dna_to_one_hot(seqs))
+    return (np.sum(np.array(vals), axis=1), one_hot.encode_sequence(seqs, method=encoding_method))
+
 
 def load_model_wrapper(model_h5):
     # read .h5 model

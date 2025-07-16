@@ -79,6 +79,10 @@ def main(args):
 
     # read tab-seperated parameters file
     parameters = get_model_param_dict(args)
+    
+    # Pass the CLI encoding_method into the model parameters
+    parameters["encoding_method"] = args.encoding_method
+    
     print(parameters)
     np.random.seed(args.seed)
 

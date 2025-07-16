@@ -14,6 +14,7 @@ def parse_args():
     parser.add_argument("-cr","--chr",type=str, required=True, help="chromosome to build pwm, the name should be present in the chrom sizes file and bigwig you will provide")
     parser.add_argument("-c","--chrom_sizes",type=str, required=True, help="TSV file with chromosome name in first column and size in the second column")
     parser.add_argument("-pw","--pwm_width",type=int, default=24, required=False, help="width of pwm matrix")
+    parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choice=["one_hot", "simplex-mono", "simplex-dimer"], help="Encoding method for input DNA sequences")
     return parser.parse_args()
 
 def get_pwm_bg(seqs, cnts, pwm_width=24):
@@ -52,7 +53,7 @@ def main(args):
 
     # fetch values in the given chromsome and for the given chromsome region
     seq = str(hg38[args.chr][0:chr_size])
-    one_hot_seq = one_hot.dna_to_one_hot(seq).squeeze()
+    one_hot_seq = one_hot.encode_sequence(seq, method=args.encoding_method).squeeze()
     bigwig_vals = np.nan_to_num(bw.values(args.chr,0,chr_size ))
     print("non zero bigwig entries in the given chromosome: ", np.sum(bigwig_vals>0))
 

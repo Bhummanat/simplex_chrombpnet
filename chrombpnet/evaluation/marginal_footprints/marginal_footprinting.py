@@ -43,6 +43,7 @@ def fetch_footprinting_args():
     parser.add_argument("-pwm_f", "--motifs_to_pwm", type=str, required=True, help="Path to a TSV file containing motifs in first column and motif string to use for footprinting in second column")    
     parser.add_argument("--ylim",default=None,type=tuple, required=False,help="lower and upper y-limits for plotting the motif footprint, in the form of a tuple i.e. \
     (0,0.8). If this is set to None, ylim will be autodetermined.")
+	parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choices=["one_hot", "simplex-mono", "simplex-dimer"], help="Encoding method to use for input DNA sequences")
     
     args = parser.parse_args()
     return args
@@ -51,7 +52,7 @@ def softmax(x, temp=1):
     norm_x = x - np.mean(x,axis=1, keepdims=True)
     return np.exp(temp*norm_x)/np.sum(np.exp(temp*norm_x), axis=1, keepdims=True)
 
-def get_footprint_for_motif(seqs, motif, model, inputlen, batch_size):
+def get_footprint_for_motif(seqs, motif, model, inputlen, batch_size, encoding_method="one_hot"):
     '''
     Returns footprints for a given motif. Motif is inserted in both the actual sequence and reverse complemented version.
     seqs input is already assumed to be one-hot encoded. motif is in sequence format.
@@ -59,7 +60,7 @@ def get_footprint_for_motif(seqs, motif, model, inputlen, batch_size):
     midpoint=inputlen//2
 
     w_mot_seqs = seqs.copy()
-    w_mot_seqs[:, midpoint-len(motif)//2:midpoint-len(motif)//2+len(motif)] = one_hot.dna_to_one_hot([motif])
+    w_mot_seqs[:, midpoint-len(motif)//2:midpoint-len(motif)//2+len(motif)] = one_hot.encode_sequence([motif], method=encoding_method)
 
     # midpoint of motif is the midpoint of sequence
     pred_output=model.predict(w_mot_seqs, batch_size=batch_size, verbose=True)
@@ -94,7 +95,7 @@ def main(args):
 
 	regions_df = pd.read_csv(args.regions, sep='\t', names=NARROWPEAK_SCHEMA)
 	regions_subsample = regions_df[(regions_df["chr"].isin(chroms_to_keep))]
-	regions_seqs = get_seq(regions_subsample, genome_fasta, inputlen)
+	regions_seqs = get_seq(regions_subsample, genome_fasta, inputlen, encoding_method=args.encoding_method)
 
 	footprints_at_motifs = {}
 
@@ -124,7 +125,7 @@ def main(args):
 		motif_to_insert_fwd=row["MOTIF_PWM_FWD"]        
 		print("inserting motif: ", motif)
 		print(motif_to_insert_fwd)
-		motif_footprint, motif_counts = get_footprint_for_motif(regions_seqs, motif_to_insert_fwd, model, inputlen, args.batch_size)
+		motif_footprint, motif_counts = get_footprint_for_motif(regions_seqs, motif_to_insert_fwd, model, inputlen, args.batch_size, encoding_method=args.encoding_method)
 		footprints_at_motifs[motif]=[motif_footprint,motif_counts]
 
 		# plot footprints of center 200bp

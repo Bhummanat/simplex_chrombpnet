@@ -10,11 +10,18 @@ def read_chrom_sizes(fname):
  
     return gs
 
-def get_seq(peaks_df, genome, width):
+def get_seq(peaks_df, genome, width, encoding_method="one_hot"):
     vals = []
     peaks_used = []
 
-    k = 2  # for your current simplex encoding
+    # Accounting inputlen for encoding methods
+    if encoding_method == "simplex_dimer":
+        k = 2
+    elif encoding_method in ["one_hot", "simplex_monomer"]:
+        k = 1
+    else:
+        raise ValueError(f"Unsupported encoding method: {encoding_method}")
+
     required_dna_len = width + k - 1
 
     for i, r in peaks_df.iterrows():
@@ -28,7 +35,7 @@ def get_seq(peaks_df, genome, width):
         else:
             peaks_used.append(False)
 
-    return one_hot.dna_to_one_hot(vals), np.array(peaks_used)
+    return one_hot.encode_sequence(vals, method=encoding_method), np.array(peaks_used)
 
 def get_regions(regions_file, seqlen, regions_used=None):
     # regions file is assumed to be centered at summit (2nd + 10th column)

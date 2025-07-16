@@ -23,6 +23,7 @@ def parse_args():
     parser.add_argument('--ATAC-ref-path', type=str, default=None, help="Path to ATAC reference motifs (ATAC.ref.motifs.txt used by default)")
     parser.add_argument('--DNASE-ref-path', type=str, default=None, help="Path to DNASE reference motifs (DNASE.ref.motfis.txt used by default)")
     parser.add_argument('--num-samples', type=int, default=10000, help="Number of reads to sample from BAM/fragment file")
+    parser.add_argument('-em', '--encoding_method', type=str, default='one-hot', choices=['one_hot', 'simplex_mono', 'simplex_dimer'], help='Encoding method to use for input DNA sequences')
     args = parser.parse_args()
     return args
 
@@ -117,7 +118,7 @@ def sample_reads(bam_path, fragment_file_path, tagalign_file_path, num_samples, 
     return plus_reads, minus_reads
 
 
-def get_pwms(plus_reads, minus_reads, genome_file):
+def get_pwms(plus_reads, minus_reads, genome_file, encoding_method="one_hot"):
     plus_seqs = []
     minus_seqs = []
     with pyfaidx.Fasta(genome_file) as g:
@@ -130,9 +131,9 @@ def get_pwms(plus_reads, minus_reads, genome_file):
             if len(cur)==40:
                 minus_seqs.append(cur)
     
-    plus_pwm = one_hot.dna_to_one_hot(plus_seqs).mean(0)
+    plus_pwm = one_hot.encode_sequence(plus_seqs, method=encoding_method).mean(0)
     plus_pwm = (plus_pwm/np.sum(plus_pwm, axis=-1, keepdims=True))
-    minus_pwm = one_hot.dna_to_one_hot(minus_seqs).mean(0)
+    minus_pwm = one_hot.encode_sequence(minus_seqs, method=encoding_method).mean(0)
     minus_pwm = (minus_pwm/np.sum(minus_pwm, axis=-1, keepdims=True))
 
     return plus_pwm, minus_pwm
@@ -219,13 +220,13 @@ def compute_shift_DNASE(ref_plus_pwms, ref_minus_pwms, plus_pwm, minus_pwm):
     return plus_shift, minus_shift 
 
 
-def compute_shift(input_bam_file, input_fragment_file, input_tagalign_file, num_samples, genome_fasta_path, data_type, ref_motifs_file):
+def compute_shift(input_bam_file, input_fragment_file, input_tagalign_file, num_samples, genome_fasta_path, data_type, ref_motifs_file, encoding_method="one_hot"):
     # only one of the 3 inputs should be non None
     assert (input_bam_file is None) + (input_fragment_file is None) + (input_tagalign_file is None) == 2, "Only one input file!"
 
     sampled_plus_reads, sampled_minus_reads = sample_reads(input_bam_file, input_fragment_file, input_tagalign_file, num_samples, genome_fasta_path)
 
-    plus_pwm, minus_pwm = get_pwms(sampled_plus_reads, sampled_minus_reads, genome_fasta_path)
+    plus_pwm, minus_pwm = get_pwms(sampled_plus_reads, sampled_minus_reads, genome_fasta_path, encoding_method=encoding_method)
     ref_plus_pwms, ref_minus_pwms = get_ref_pwms(ref_motifs_file)
 
     if data_type=="ATAC":
@@ -253,7 +254,8 @@ def main():
             args.num_samples,
             args.genome,
             args.data_type,
-            ref_motifs_file)
+            ref_motifs_file,
+            encoding_method=args.encoding_method)
     
 
 if __name__=="__main__":

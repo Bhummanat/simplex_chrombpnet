@@ -24,7 +24,7 @@ class ChromBPNetBatchGenerator(keras.utils.Sequence):
     every epoch, and calls bias model on it, whose outputs (bias profile logits 
     and bias logcounts) are fed as input to the chrombpnet model.
     """
-    def __init__(self, peak_regions, nonpeak_regions, genome_fasta, batch_size, inputlen, outputlen, max_jitter, negative_sampling_ratio, cts_bw_file, add_revcomp, return_coords, shuffle_at_epoch_start):
+    def __init__(self, peak_regions, nonpeak_regions, genome_fasta, batch_size, inputlen, outputlen, max_jitter, negative_sampling_ratio, cts_bw_file, add_revcomp, return_coords, shuffle_at_epoch_start, encoding_method=None):
         """
         seqs: B x L' x 4
         cts: B x M'
@@ -33,7 +33,8 @@ class ChromBPNetBatchGenerator(keras.utils.Sequence):
         batch_size: int (B)
         """
 
-        peak_seqs, peak_cts, peak_coords, nonpeak_seqs, nonpeak_cts, nonpeak_coords, = data_utils.load_data(peak_regions, nonpeak_regions, genome_fasta, cts_bw_file, inputlen, outputlen, max_jitter)
+        self.encoding_method = encoding_method
+        peak_seqs, peak_cts, peak_coords, nonpeak_seqs, nonpeak_cts, nonpeak_coords, = data_utils.load_data(peak_regions, nonpeak_regions, genome_fasta, cts_bw_file, inputlen, outputlen, max_jitter, encoding_method=self.encoding_method)
         self.peak_seqs, self.nonpeak_seqs = peak_seqs, nonpeak_seqs
         self.peak_cts, self.nonpeak_cts = peak_cts, nonpeak_cts
         self.peak_coords, self.nonpeak_coords = peak_coords, nonpeak_coords
@@ -45,6 +46,7 @@ class ChromBPNetBatchGenerator(keras.utils.Sequence):
         self.add_revcomp = add_revcomp
         self.return_coords = return_coords
         self.shuffle_at_epoch_start = shuffle_at_epoch_start
+        self.encoding_method = encoding_method
 
 
         # random crop training data to the desired sizes, revcomp augmentation

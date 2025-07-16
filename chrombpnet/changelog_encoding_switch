@@ -1,0 +1,42 @@
+Change log
+Step 1: Add Encoding Method to CLI
+parsers.py
+	- For each command block, add argument for one-hot, simplex-mono, simplex-dimer
+
+Step 2: Dynamic Sequence Encoding
+one_hot.py
+	- Create a unified interface to route sequences through correct encoder based on args.encoding_method
+
+Step 3: Adjust Model Input Shape
+bpnet_model.py and chrombpnet_with_bias_model.py
+	- replace inp = Input(shape(=...)
+	- encoding_method if/elif/else
+
+Step 4: Patching to pass encoding_method to model_params
+train.py and predict.py
+
+Step 5: Connect argument passing for encoding_method through to dna_to_one_hot()
+    - Router function connecting to dna_to_one_hot_real(), and simplex implementation
+
+STEP 5: Tracing
+bash-4.4$ grep -rin 'import one_hot'
+chrombpnet/evaluation/variant_effect_prediction/snp_generator.py:6:from chrombpnet.training.utils import one_hot
+chrombpnet/evaluation/make_bigwigs/bigwig_helper.py:3:from chrombpnet.training.utils.data_utils import one_hot
+chrombpnet/evaluation/interpret/input_utils.py:8:from chrombpnet.training.utils.data_utils import one_hot
+chrombpnet/training/utils/data_utils.py:5:from chrombpnet.training.utils import one_hot
+
+bash-4.4$ grep -rin 'import chrombpnet.training.utils.one_hot as one_hot'
+evaluation/make_bigwigs/predict_to_bigwig.py:12:import chrombpnet.training.utils.one_hot as one_hot
+evaluation/marginal_footprints/marginal_footprinting.py:17:import chrombpnet.training.utils.one_hot as one_hot
+helpers/preprocessing/analysis/build_pwm_from_bigwig.py:7:import chrombpnet.training.utils.one_hot as one_hot
+helpers/preprocessing/auto_shift_detect.py:12:import chrombpnet.training.utils.one_hot as one_hot
+helpers/hyperparameters/param_utils.py:2:import chrombpnet.training.utils.one_hot as one_hot
+
+    - Traced all that calls one_hot until reaching CLI scripts
+
+STEP 6: Data generators
+Flow is CLI -> train.py -> get_model() -> bpnet_model.py -> set input shape
+    IN PARALLEL: train.py -> initializers.py -> batchgen_generator.py -> load_data() in data_utils.py -> one_hot.encode_sequence(method="...")
+
+Patched train.py, initializers.py, batchgen_generator.py, and data_utils.py to pass encoding method from train.py
+

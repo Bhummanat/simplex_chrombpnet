@@ -102,6 +102,7 @@ def parse_args():
     parser.add_argument("-t", "--tqdm", type=int,default=0, help="Use tqdm. If yes then you need to have it installed.")
     parser.add_argument("-d", "--debug-chr", nargs="+", type=str, default=None, help="Run for specific chromosomes only (e.g. chr1 chr2) for debugging")
     parser.add_argument("-bw", "--bigwig", type=str, default=None, help="If provided .h5 with predictions are output along with calculated metrics considering bigwig as groundtruth.")
+    parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choices=["one_hot", "simplex-mono", "simplex-dimer"], help="Encoding method for input DNA sequences")
     args = parser.parse_args()
     assert (args.bias_model is None) + (args.chrombpnet_model is None) + (args.chrombpnet_model_nb is None) < 3, "No input model provided!"
     print(args)
@@ -133,7 +134,7 @@ def main(args):
         regions_df = pd.read_csv(args.regions, sep='\t', names=NARROWPEAK_SCHEMA)
         print(regions_df.head())
         with pyfaidx.Fasta(args.genome) as g:
-            seqs, regions_used = bigwig_helper.get_seq(regions_df, g, inputlen)
+            seqs, regions_used = bigwig_helper.get_seq(regions_df, g, inputlen, encoding_method=args.encoding_method)
 
         gs = bigwig_helper.read_chrom_sizes(args.chrom_sizes)
         regions = bigwig_helper.get_regions(args.regions, outputlen, regions_used) # output regions
@@ -173,7 +174,7 @@ def main(args):
         regions_df = pd.read_csv(args.regions, sep='\t', names=NARROWPEAK_SCHEMA)
         print(regions_df.head())
         with pyfaidx.Fasta(args.genome) as g:
-            seqs, regions_used = bigwig_helper.get_seq(regions_df, g, inputlen)
+            seqs, regions_used = bigwig_helper.get_seq(regions_df, g, inputlen, encoding_method=args.encoding_method)
 
         gs = bigwig_helper.read_chrom_sizes(args.chrom_sizes)
         regions = bigwig_helper.get_regions(args.regions, outputlen, regions_used) # output regions
@@ -213,7 +214,7 @@ def main(args):
         regions_df = pd.read_csv(args.regions, sep='\t', names=NARROWPEAK_SCHEMA)
         print(regions_df.head())
         with pyfaidx.Fasta(args.genome) as g:
-            seqs, regions_used = bigwig_helper.get_seq(regions_df, g, inputlen)
+            seqs, regions_used = bigwig_helper.get_seq(regions_df, g, inputlen, encoding_method=args.encoding_method)
 
         regions_df[regions_used].to_csv(args.output_prefix + "_bias_preds.bed", sep="\t", header=False, index=False)
         gs = bigwig_helper.read_chrom_sizes(args.chrom_sizes)

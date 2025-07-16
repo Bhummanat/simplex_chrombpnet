@@ -38,7 +38,18 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
     rn.seed(seed)
 
     # Define input layer
-    inp = Input(shape=(sequence_len - 1, 15), name='sequence')
+    encoding_method = model_params.get("encoding_method", "one_hot")   # Defaults to one_hot
+
+    if encoding_method == "one_hot":
+        input_shape = (sequence_len, 4)
+    elif encoding_method == "simplex_monomer":
+        input_shape = (sequence_len, 3)
+    elif encoding_method == "simplex_dimer":
+        input_shape = (sequence_len - 1, 15)
+    else:
+        raise ValueError(f"Unknown encoding method: {encoding_method}")
+
+    inp = Input(shape=input_shape, name='sequence')
 
     # First convolution -> BatchNorm -> tanh
     x = Conv1D(filters,

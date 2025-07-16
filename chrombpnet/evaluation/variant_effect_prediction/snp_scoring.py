@@ -21,6 +21,7 @@ def fetch_variant_args():
     parser.add_argument("-op","--output-prefix", type=str, required=True, help="Path to storing snp effect score predictions from the script, directory should already exist")
     parser.add_argument("-bs","--batch_size", type=int, default=64, help="Batch size to use for model")
     parser.add_argument("-dm","--debug_mode_on", type=int, default=0, help="Use this mode to print the flanks of first five SNP insert locations")
+    parser.add_argument("-em", "--encoding_method", type=str, default="one_hot", choices=["one_hot", "simplex-mono", "simplex-dimer"], help="Encoding method to use for SNP sequence conversion")
     args = parser.parse_args()
     return args
 
@@ -36,7 +37,7 @@ def load_model_wrapper(args):
     print("model loaded succesfully")
     return model
 
-def fetch_snp_predictions(model, snp_regions, inputlen, genome_fasta, batch_size, debug_mode_on=False):
+def fetch_snp_predictions(model, snp_regions, inputlen, genome_fasta, batch_size, debug_mode_on=False, encoding_method="one_hot"):
     '''
     Returns model predictions (counts and profile probability predictions) at the given reference and alternate snp alleles.
     Please note that if the SNP location is at the edge - i.e we are unable to form a given inputlen of sequence - we skip predictions at this SNP
@@ -68,7 +69,8 @@ def fetch_snp_predictions(model, snp_regions, inputlen, genome_fasta, batch_size
                         inputlen=inputlen,
                         genome_fasta=genome_fasta,
                         batch_size=batch_size,
-                        debug_mode_on=debug_mode_on)
+                        debug_mode_on=debug_mode_on,
+                        encoding_method=args.encoding_method)
 
     for i in range(len(snp_gen)):
 
@@ -130,7 +132,7 @@ def main(args):
     print("input length inferred from the model: ", inputlen)
 
     # fetch model prediction on snps
-    rsids, ref_logcount_preds, alt_logcount_preds, ref_prob_preds, alt_prob_preds = fetch_snp_predictions(model, snp_regions, inputlen, args.genome, args.batch_size, debug_mode_on)
+    rsids, ref_logcount_preds, alt_logcount_preds, ref_prob_preds, alt_prob_preds = fetch_snp_predictions(model, snp_regions, inputlen, args.genome, args.batch_size, debug_mode_on, encoding_method=args.encoding_method)
 
     # find varaint effect scores at snps
     log_counts_diff, log_probs_diff_abs_sum, probs_jsd_diff = predict_snp_effect_scores(rsids, ref_logcount_preds, alt_logcount_preds, ref_prob_preds, alt_prob_preds)
