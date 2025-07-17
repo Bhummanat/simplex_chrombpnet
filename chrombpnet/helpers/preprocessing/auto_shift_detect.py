@@ -1,4 +1,3 @@
-import argparse
 import pyBigWig
 import pyfaidx
 import subprocess
@@ -23,7 +22,7 @@ def parse_args():
     parser.add_argument('--ATAC-ref-path', type=str, default=None, help="Path to ATAC reference motifs (ATAC.ref.motifs.txt used by default)")
     parser.add_argument('--DNASE-ref-path', type=str, default=None, help="Path to DNASE reference motifs (DNASE.ref.motfis.txt used by default)")
     parser.add_argument('--num-samples', type=int, default=10000, help="Number of reads to sample from BAM/fragment file")
-    parser.add_argument('-em', '--encoding_method', type=str, default='one-hot', choices=['one_hot', 'simplex_mono', 'simplex_dimer'], help='Encoding method to use for input DNA sequences')
+    parser.add_argument('-em', '--encoding_method', type=str, default='one-hot', choices=['one_hot', 'simplex_monomer', 'simplex_dimer'], help='Encoding method to use for input DNA sequences')
     args = parser.parse_args()
     return args
 

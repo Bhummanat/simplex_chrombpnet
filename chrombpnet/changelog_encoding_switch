@@ -1,7 +1,7 @@
 Change log
 Step 1: Add Encoding Method to CLI
 parsers.py
-	- For each command block, add argument for one-hot, simplex-mono, simplex-dimer
+	- For each command block, add argument for one_hot, simplex_mono, simplex_dimer
 
 Step 2: Dynamic Sequence Encoding
 one_hot.py

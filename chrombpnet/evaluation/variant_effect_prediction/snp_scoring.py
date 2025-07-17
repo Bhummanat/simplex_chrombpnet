@@ -21,7 +21,7 @@ def fetch_variant_args():
     parser.add_argument("-op","--output-prefix", type=str, required=True, help="Path to storing snp effect score predictions from the script, directory should already exist")
     parser.add_argument("-bs","--batch_size", type=int, default=64, help="Batch size to use for model")
     parser.add_argument("-dm","--debug_mode_on", type=int, default=0, help="Use this mode to print the flanks of first five SNP insert locations")
-    parser.add_argument("-em", "--encoding_method", type=str, default="one_hot", choices=["one_hot", "simplex-mono", "simplex-dimer"], help="Encoding method to use for SNP sequence conversion")
+    parser.add_argument("-em", "--encoding_method", type=str, default="one_hot", choices=["one_hot", "simplex_monomer", "simplex_dimer"], help="Encoding method to use for SNP sequence conversion")
     args = parser.parse_args()
     return args
 

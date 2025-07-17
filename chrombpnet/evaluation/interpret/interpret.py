@@ -28,7 +28,7 @@ def fetch_interpret_args():
     parser.add_argument("-d", "--debug_chr", nargs="+", type=str, default=None, help="Run for specific chromosomes only (e.g. chr1 chr2) for debugging")
     parser.add_argument("-p", "--profile_or_counts", nargs="+", type=str, default=["counts", "profile"], choices=["counts", "profile"],
                         help="use either counts or profile or both for running shap")
-    parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choices=["one_hot", "simplex-mono", "simplex-dimer"], help="Encoding method for input DNA sequences")
+    parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choices=["one_hot", "simplex_monomer", "simplex_dimer"], help="Encoding method for input DNA sequences")
 
     args = parser.parse_args()
     return args

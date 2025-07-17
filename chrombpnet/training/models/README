@@ -1,0 +1,8 @@
+# Bias Models
+bpnet_model.py --> Current, added saturation 'logging' with dummy input -- forward-pass only; contains both tanh+batchnormn
+bpnet_model_tahn+bn.py --> before logging; contains both tanh+batchnorm
+bpnet_model_leakyReLU.py --> leakyReLU
+bpnet_model_OLD_original.py	--> Original from source
+
+# TF Models
+chrombpnet_with_bias_model.py --> original

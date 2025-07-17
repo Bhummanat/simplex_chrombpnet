@@ -1,4 +1,5 @@
 from __future__ import division, print_function, absolute_import
+from chrombpnet.training.models.bpnet_model import TanhSaturationMonitor
 import importlib.machinery
 import tensorflow.keras.callbacks as tfcallbacks 
 import chrombpnet.training.utils.argmanager as argmanager
@@ -25,24 +26,40 @@ def get_model(args, parameters):
     print("got the model")
     return model, architecture_module
 
-def fit_and_evaluate(model,train_gen,valid_gen,args,architecture_module):
-    model_output_path_h5_name=args.output_prefix+".h5"
-    model_output_path_logs_name=args.output_prefix+".log"
+def fit_and_evaluate(model, train_gen, valid_gen, args, architecture_module):
+    model_output_path_h5_name = args.output_prefix + ".h5"
+    model_output_path_logs_name = args.output_prefix + ".log"
 
-    checkpointer = tfcallbacks.ModelCheckpoint(filepath=model_output_path_h5_name, monitor="val_loss", mode="min",  verbose=1, save_best_only=True)
+    checkpointer = tfcallbacks.ModelCheckpoint(filepath=model_output_path_h5_name, monitor="val_loss", mode="min", verbose=1, save_best_only=True)
     earlystopper = tfcallbacks.EarlyStopping(monitor='val_loss', mode="min", patience=args.early_stop, verbose=1, restore_best_weights=True)
-    history= callbacks.LossHistory(model_output_path_logs_name+".batch",args.trackables)
+    history = callbacks.LossHistory(model_output_path_logs_name + ".batch", args.trackables)
     csvlogger = tfcallbacks.CSVLogger(model_output_path_logs_name, append=False)
-    #reduce_lr = tfcallbacks.ReduceLROnPlateau(monitor='val_loss',factor=0.4, patience=args.early_stop-2, min_lr=0.00000001)
-    cur_callbacks=[checkpointer,earlystopper,csvlogger,history]
 
+    # === Create representative sample input for saturation monitoring ===
+    encoding = args.encoding_method
+    if encoding == "one_hot":
+        input_shape = (int(args.inputlen), 4)
+    elif encoding == "simplex_monomer":
+        input_shape = (int(args.inputlen), 3)
+    elif encoding == "simplex_dimer":
+        input_shape = (int(args.inputlen) - 1, 15)
+    else:
+        raise ValueError(f"Unknown encoding method: {encoding}")
+
+    sample_input = np.random.choice([-1, 0, 1], size=(1,) + input_shape).astype(np.float32)
+    tanh_monitor = TanhSaturationMonitor(sample_input=sample_input, encoding_method=encoding)
+
+    # === Final callbacks ===
+    cur_callbacks = [checkpointer, earlystopper, csvlogger, history, tanh_monitor]
+
+    # === Train ===
     model.fit(train_gen,
               validation_data=valid_gen,
               epochs=args.epochs,
               verbose=1,
               callbacks=cur_callbacks)
 
-    print('save model') 
+    print('save model')
     model.save(model_output_path_h5_name)
 
     architecture_module.save_model_without_bias(model, args.output_prefix)

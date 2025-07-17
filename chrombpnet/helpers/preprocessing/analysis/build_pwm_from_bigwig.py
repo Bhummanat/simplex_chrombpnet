@@ -14,7 +14,7 @@ def parse_args():
     parser.add_argument("-cr","--chr",type=str, required=True, help="chromosome to build pwm, the name should be present in the chrom sizes file and bigwig you will provide")
     parser.add_argument("-c","--chrom_sizes",type=str, required=True, help="TSV file with chromosome name in first column and size in the second column")
     parser.add_argument("-pw","--pwm_width",type=int, default=24, required=False, help="width of pwm matrix")
-    parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choice=["one_hot", "simplex-mono", "simplex-dimer"], help="Encoding method for input DNA sequences")
+    parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choice=["one_hot", "simplex_monomer", "simplex_dimer"], help="Encoding method for input DNA sequences")
     return parser.parse_args()
 
 def get_pwm_bg(seqs, cnts, pwm_width=24):

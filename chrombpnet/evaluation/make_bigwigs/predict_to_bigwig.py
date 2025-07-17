@@ -102,7 +102,7 @@ def parse_args():
     parser.add_argument("-t", "--tqdm", type=int,default=0, help="Use tqdm. If yes then you need to have it installed.")
     parser.add_argument("-d", "--debug-chr", nargs="+", type=str, default=None, help="Run for specific chromosomes only (e.g. chr1 chr2) for debugging")
     parser.add_argument("-bw", "--bigwig", type=str, default=None, help="If provided .h5 with predictions are output along with calculated metrics considering bigwig as groundtruth.")
-    parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choices=["one_hot", "simplex-mono", "simplex-dimer"], help="Encoding method for input DNA sequences")
+    parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choices=["one_hot", "simplex_monomer", "simplex_dimer"], help="Encoding method for input DNA sequences")
     args = parser.parse_args()
     assert (args.bias_model is None) + (args.chrombpnet_model is None) + (args.chrombpnet_model_nb is None) < 3, "No input model provided!"
     print(args)

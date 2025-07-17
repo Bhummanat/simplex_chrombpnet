@@ -43,7 +43,7 @@ def fetch_footprinting_args():
     parser.add_argument("-pwm_f", "--motifs_to_pwm", type=str, required=True, help="Path to a TSV file containing motifs in first column and motif string to use for footprinting in second column")    
     parser.add_argument("--ylim",default=None,type=tuple, required=False,help="lower and upper y-limits for plotting the motif footprint, in the form of a tuple i.e. \
     (0,0.8). If this is set to None, ylim will be autodetermined.")
-	parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choices=["one_hot", "simplex-mono", "simplex-dimer"], help="Encoding method to use for input DNA sequences")
+	parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choices=["one_hot", "simplex_monomer", "simplex_dimer"], help="Encoding method to use for input DNA sequences")
     
     args = parser.parse_args()
     return args
