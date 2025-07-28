@@ -1,0 +1,20 @@
+For actual runs with downstream analysis and processes -- must uncomment some parts:
+
+helpers/preprocessing/reads_to_bigwig.py
+```
+#        plus_shift, minus_shift = auto_shift_detect.compute_shift(args.input_bam_file,
+#                args.input_fragment_file,
+#                args.input_tagalign_file,
+#                args.num_samples,
+#                args.genome,
+#                args.data_type,
+#                ref_motifs_file)
+        # Shift detection disabled for consistent runtime benchmarking
+        plus_shift, minus_shift = 0, 0
+        print("Shift detection disabled: using plus_shift = 0, minus_shift = 0")
+```
+
+pipelines.py
+```
+#	build_pwm_from_bigwig.main(args)            Disabled for direct benchmarking and simplex compatibility
+```

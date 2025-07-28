@@ -1,5 +1,5 @@
 # Bias Models
-bpnet_model.py --> Current, added saturation 'logging' with dummy input -- forward-pass only; contains both tanh+batchnormn
+bpnet_model.py --> Current, contains both tanh+batchnormn; Fixed encoding names mismatch
 bpnet_model_tahn+bn.py --> before logging; contains both tanh+batchnorm
 bpnet_model_leakyReLU.py --> leakyReLU
 bpnet_model_OLD_original.py	--> Original from source

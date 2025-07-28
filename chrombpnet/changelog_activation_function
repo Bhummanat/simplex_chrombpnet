@@ -1,0 +1,22 @@
+Implemented to allow externel script defining activation layer
+Rationale:
+Allow for more delicate and parameterized activations (e.g. `LeakyReLU(alpha=0.1))
+Ex:
+chrombpnet bias train --activation-function /path/to/my_activation_logic.py
+
+# Step 1: Create an activation script
+```
+def apply_activation(x, layer_name):
+    from tensorflow.keras.layers import Activation, LeakyReLU
+
+    if '1st' in layer_name:
+        return LeakyReLU(alpha = 0.1, name = layer_name)(x)
+    else:
+        return Activation("tanh", name = layer_name)(x)
+```
+## Requirement for the scripts:
+- define a function named apply_activation(x, layer_name)
+- Function must return activated tensor
+- Condition on layer_name
+- Implement valid Keras activation or define your own
+

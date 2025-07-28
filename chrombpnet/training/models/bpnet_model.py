@@ -112,41 +112,6 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
 
     return model
 
-class TanhSaturationMonitor(tf.keras.callbacks.Callback):
-    def __init__(self, sample_input, encoding_method, threshold=2.5):
-        super().__init__()
-        self.sample_input = sample_input
-        self.threshold = threshold
-        self.encoding_method = encoding_method
-
-    def on_epoch_end(self, epoch, logs=None):
-        print(f"\n Epoch {epoch+1}: Activation Saturation Monitor ({self.encoding_method})")
-
-        # Log pre-BN output of first conv layer
-        try:
-            conv1_layer = self.model.get_layer("bpnet_1st_conv")
-            hook_conv = Model(inputs=self.model.input, outputs=conv1_layer.output)
-            conv_out = hook_conv.predict(self.sample_input, verbose=0)
-            flat = conv_out.flatten()
-            print(f"First Conv1D Output: mean={np.mean(flat):.3f}, std={np.std(flat):.3f}, "
-                  f"min={np.min(flat):.2f}, max={np.max(flat):.2f}")
-        except Exception as e:
-            print("  [!] Could not log Conv1D output:", str(e))
-
-        # Log tanh input saturation
-        tanh_layers = [l for l in self.model.layers 
-                       if isinstance(l, Activation) and l.activation.__name__ == 'tanh']
-        hook_model = Model(inputs=self.model.input, outputs=[l.input for l in tanh_layers])
-        activations = hook_model.predict(self.sample_input, verbose=0)
-
-        for layer, act in zip(tanh_layers, activations):
-            flat = act.flatten()
-            sat_pct = np.mean(np.abs(flat) > self.threshold) * 100
-            print(f"  • `{layer.name}` | mean={np.mean(flat):.3f}, std={np.std(flat):.3f}, "
-                  f"min={np.min(flat):.2f}, max={np.max(flat):.2f}, "
-                  f"{sat_pct:.2f}% > ±{self.threshold}")
-
-
 def save_model_without_bias(model, output_prefix):
     # This function is left empty intentionally
     return
