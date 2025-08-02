@@ -9,7 +9,7 @@ import random as rn
 import os
 
 # Set a fixed random seed for reproducibility
-os.environ['PYTHONHASHSEED'] = '0'
+os.environ['PYTHONHASHSEED'] = '0'   # Fixing Python hashing and RNG states
 
 def getModelGivenModelOptionsAndWeightInits(args, model_params):
     # Default convolution parameters
@@ -49,7 +49,7 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
     else:
         raise ValueError(f"Unknown encoding method: {encoding_method}")
 
-    inp = Input(shape=input_shape, name='sequence')
+    inp = Input(shape=input_shape, name='sequence')   # Input tensor
 
     # First convolution -> BatchNorm -> tanh
     x = Conv1D(filters,
@@ -65,13 +65,15 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
     for i in range(1, n_dil_layers + 1):
         conv_layer_name = f'bpnet_{layer_names[i-1]}conv'
 
-        # Apply dilated Conv1D -> BN -> tanh
+        # Apply dilated Conv1D
         conv_x = Conv1D(filters,
                         kernel_size=3,
                         padding='valid',
                         activation=None,
                         dilation_rate=2**i,
                         name=conv_layer_name)(x)
+
+        # BatchNorm + tanh
         conv_x = BatchNormalization(name=f"bpnet_{layer_names[i-1]}_bn")(conv_x)
         conv_x = Activation("tanh", name=f"bpnet_{layer_names[i-1]}_activation")(conv_x)
 

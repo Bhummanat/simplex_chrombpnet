@@ -121,6 +121,7 @@ def read_parser():
         optional_main_parser.add_argument("-j", "--max-jitter", type=int, default=500, help="Maximum jitter applied on either side of region (default 500 for chrombpnet model)")
         optional_main_parser.add_argument("-bs", "--batch-size", type=int, default=64, help="batch size to use for model training")
         optional_main_parser.add_argument("--encoding-method", type=str, choices=["one_hot", "simplex_monomer", "simplex_dimer"], default="one_hot", help="Encoding scheme to use for input sequences")
+        optional_main_parser.add_argument("--activation_function", type=str, default=None, help="Path to Python script that defines `apply_activation(x, layer_name)`")
  
          # chrombpnet pipeline arguments
 		
@@ -187,6 +188,7 @@ def read_parser():
         optional_biast_parser.add_argument("-j", "--max-jitter", type=int, default=0, help="Maximum jitter applied on either side of region (default 500 for chrombpnet model)")
         optional_biast_parser.add_argument("-bs", "--batch-size", type=int, default=64, help="batch size to use for model training")
         optional_biast_parser.add_argument("--encoding-method", type=str, choices=["one_hot", "simplex_monomer", "simplex_dimer"], default="one_hot", help="Encoding scheme to use for input sequences")
+        optional_biast_parser.add_argument("--activation_function", type=str, default=None, help="Path to Python script that defines `apply_activation(x, layer_name)`")
 
  
        # bias model qc arguments
@@ -228,6 +230,7 @@ def read_parser():
         optional_preds.add_argument("-d", "--debug-chr", nargs="+", type=str, default=None, help="Run for specific chromosomes only (e.g. chr1 chr2) for debugging")
         optional_preds.add_argument("-bw", "--bigwig", type=str, default=None, help="If provided .h5 with predictions are output along with calculated metrics considering bigwig as groundtruth.")
         optional_preds.add_argument("--encoding-method", type=str, choices=["one_hot", "simplex_monomer", "simplex_dimer"], default="one_hot", help="Encoding scheme to use for input sequences")
+        optional_preds.add_argument("--activation_function", type=str, default=None, help="Path to Python script that defines `apply_activation(x, layer_name)`")
 
        
         # Make contribution score bigwigs

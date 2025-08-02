@@ -1,22 +1,33 @@
 Implemented to allow externel script defining activation layer
 Rationale:
-Allow for more delicate and parameterized activations (e.g. `LeakyReLU(alpha=0.1))
+Allow for more delicate and parameterized activations (e.g. `LeakyReLU(alpha=0.1)`)
 Ex:
-chrombpnet bias train --activation-function /path/to/my_activation_logic.py
+`chrombpnet bias train --activation-function /path/to/my_activation_logic.py`
 
-# Step 1: Create an activation script
+# Step 1: Create an activation script (multiple custom)
 ```
 def apply_activation(x, layer_name):
     from tensorflow.keras.layers import Activation, LeakyReLU
-
-    if '1st' in layer_name:
-        return LeakyReLU(alpha = 0.1, name = layer_name)(x)
-    else:
-        return Activation("tanh", name = layer_name)(x)
+    print(f"[Custom Activation] Applying LeakyReLU to {layer_name}")
+    return LeakyReLU(alpha=0.1, name=layer_name)(x)
 ```
 ## Requirement for the scripts:
-- define a function named apply_activation(x, layer_name)
+- define a function named `apply_activation(x, layer_name)`
 - Function must return activated tensor
-- Condition on layer_name
+- Condition on `layer_name`
 - Implement valid Keras activation or define your own
 
+# Step 2: Add to parser CLI options
+- Add optional arg for `--activation_function`
+
+# Step 3: Pass the activation script path into model parameters
+In `train.py`, inside main(args) function -- from parsers `arg` get `activation_function_script` and set to `activation_script`
+
+# Step 4: Implement calling custom activation in model file
+In `bpnet_model.py`:
+- `importlib.util` to allow custom script loading
+- `def load_activation_function()` to retrieve `apply_activation()`
+- In model function `getModelGivenModelOptionsAndWeightInits()`
+    - `activation_script = model_params.get("activation_function_script", None)` to load external script
+    - `if` switch to use custom or default activation function
+    - `x = apply_activation(x, 'bpnet_1st_activation')` to use activation function

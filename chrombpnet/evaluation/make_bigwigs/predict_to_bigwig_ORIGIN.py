@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import pyfaidx
 from tensorflow.keras.utils import get_custom_objects
-import tensorflow.keras.backend as K
 from tensorflow.keras.models import load_model
 import tensorflow as tf
 import chrombpnet.evaluation.make_bigwigs.bigwig_helper as bigwig_helper
@@ -13,19 +12,6 @@ import chrombpnet.training.utils.data_utils as data_utils
 import chrombpnet.training.utils.one_hot as one_hot
 import h5py
 import json
-
-# Adding custom activations
-get_custom_objects()["hard_tanh"] = lambda x: K.clip(x, -1.0, 1.0)
-get_custom_objects()["tanh_shrink"] = lambda x: x - K.tanh(x)
-def gelu(x):
-    return 0.5 * x * (1.0 + tf.math.erf(x / tf.sqrt(2.0)))
-get_custom_objects()["gelu"] = gelu
-def swish(x):
-    return x * tf.keras.activations.sigmoid(x)
-get_custom_objects()["swish"] = swish
-def mish(x):
-    return x * K.tanh(K.softplus(x))  # softplus(x) = log(1 + exp(x))
-get_custom_objects()["mish"] = mish
 
 NARROWPEAK_SCHEMA = ["chr", "start", "end", "1", "2", "3", "4", "5", "6", "summit"]
 

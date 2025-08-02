@@ -1,0 +1,2 @@
+predict_to_bigwig.py
+- Modified to accommondate custom activation function (e.g. hard tanh)

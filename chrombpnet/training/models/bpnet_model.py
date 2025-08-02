@@ -7,11 +7,30 @@ from chrombpnet.training.utils.losses import multinomial_nll
 import tensorflow as tf
 import random as rn
 import os
+import importlib.util   # Allow loading Python files dynamically at runtime
 
 # Set a fixed random seed for reproducibility
 os.environ['PYTHONHASHSEED'] = '0'   # Fixing Python hashing and RNG states
 
+# Loads /path/to/custom_script.py; Retrieves apply_activation() function
+def load_activation_function(script_path):
+# "Open this Python file at script_path, run everything inside, and hand me the function called apply_activation() so I can use it inside the model."
+    spec = importlib.util.spec_from_file_location("activation_module", script_path)   # spec for how Python should load module
+    activation_module = importlib.util.module_from_spec(spec)   # Create a new empty Python module object using the spec
+    spec.loader.exec_module(activation_module)   # Executes the code in the file; Loads all functions/variables into activation_module
+    return activation_module.apply_activation   # Returns apply_activation function
+
 def getModelGivenModelOptionsAndWeightInits(args, model_params):
+    # Load external activation script if specified
+    activation_script = model_params.get("activation_function_script", None)
+
+    if activation_script:
+        print(f"[INFO] Using custom activation function from: {activation_script}")
+        apply_activation = load_activation_function(activation_script)
+    else:
+        def apply_activation(x, layer_name):
+            return Activation("tanh", name=layer_name)(x)   # Defaulting to tanh -- we can change to best method for simplex_monomer later
+
     # Default convolution parameters
     conv1_kernel_size = 21
     profile_kernel_size = 75
@@ -51,14 +70,13 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
 
     inp = Input(shape=input_shape, name='sequence')   # Input tensor
 
-    # First convolution -> BatchNorm -> tanh
+    # First convolution + Activation Function
     x = Conv1D(filters,
                kernel_size=conv1_kernel_size,
                padding='valid',
                activation=None,
                name='bpnet_1st_conv')(inp)
-    x = BatchNormalization(name='bpnet_1st_bn')(x)
-    x = Activation("tanh", name='bpnet_1st_activation')(x)
+    x = apply_activation(x, 'bpnet_1st_activation')   # Using custom or default activation
 
     # Dilated convolutional blocks with residual connections
     layer_names = [str(i) for i in range(1, n_dil_layers + 1)]
@@ -73,9 +91,8 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
                         dilation_rate=2**i,
                         name=conv_layer_name)(x)
 
-        # BatchNorm + tanh
-        conv_x = BatchNormalization(name=f"bpnet_{layer_names[i-1]}_bn")(conv_x)
-        conv_x = Activation("tanh", name=f"bpnet_{layer_names[i-1]}_activation")(conv_x)
+        # Activation Function
+        conv_x = apply_activation(conv_x, f"bpnet_{layer_names[i-1]}_activation")   # Using custom or default activation
 
         # Crop original x to match conv_x and add (residual connection)
         x_len = int_shape(x)[1]

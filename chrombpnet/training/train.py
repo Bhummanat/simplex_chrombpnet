@@ -83,6 +83,9 @@ def main(args):
     # Pass the CLI encoding_method into the model parameters
     parameters["encoding_method"] = args.encoding_method
     
+    # Pass the CLI activation logic into the model parameters
+    parameters["activation_function_script"] = args.activation_function
+
     print(parameters)
     np.random.seed(args.seed)
 
