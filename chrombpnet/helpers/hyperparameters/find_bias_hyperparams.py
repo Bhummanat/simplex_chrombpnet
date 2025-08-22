@@ -17,7 +17,7 @@ def parse_data_args():
     parser.add_argument("-oth", "--outlier-threshold", type=float, default=0.9999, help="threshold to use to filter outlies")
     parser.add_argument("-j", "--max-jitter", type=int, default=50, help="Maximum jitter applied on either side of region (default 500 for chrombpnet model)")
     parser.add_argument("-fl", "--chr-fold-path", type=str, required=True, help="Fold information - dictionary with test,valid and train keys and values with corresponding chromosomes")
-    parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choices=["one_hot", "simplex_monomer", "simplex_dimer"], help="Encoding method for DNA sequence")
+    parser.add_argument("-em", "--encoding-method", type=str, default="one_hot", choices=["one_hot", "simplex_monomer", "simplex_dimer", "scalar", "simplex_monomer_scalar"], help="Encoding method for DNA sequence")
     return parser
 
 def parse_model_args(parser):

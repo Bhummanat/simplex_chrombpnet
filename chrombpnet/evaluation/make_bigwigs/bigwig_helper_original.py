@@ -15,9 +15,9 @@ def get_seq(peaks_df, genome, width, encoding_method="one_hot"):
     peaks_used = []
 
     # Accounting inputlen for encoding methods
-    if encoding_method in ["place_holder"]:
+    if encoding_method == "simplex_dimer":
         k = 2
-    if encoding_method in ["one_hot", "simplex_monomer", "simplex_dimer", "simplex_monomer_scalar", "scalar"]:
+    elif encoding_method in ["one_hot", "simplex_monomer", "scalar", "simplex_monomer_scalar"]:
         k = 1
     else:
         raise ValueError(f"Unsupported encoding method: {encoding_method}")

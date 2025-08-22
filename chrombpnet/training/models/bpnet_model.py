@@ -29,7 +29,7 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
         apply_activation = load_activation_function(activation_script)
     else:
         def apply_activation(x, layer_name):
-            return Activation("tanh", name=layer_name)(x)   # Defaulting to tanh -- we can change to best method for simplex_monomer later
+            return Activation("ReLU", name=layer_name)(x)   # Defaulting to ReLU
 
     # Default convolution parameters
     conv1_kernel_size = 21
@@ -60,11 +60,15 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
     encoding_method = model_params.get("encoding_method", "one_hot")   # Defaults to one_hot
 
     if encoding_method == "one_hot":
-        input_shape = (sequence_len, 4)
+        input_shape = (sequence_len - 1, 1)
     elif encoding_method == "simplex_monomer":
-        input_shape = (sequence_len, 3)
+        input_shape = (sequence_len, 4)
     elif encoding_method == "simplex_dimer":
-        input_shape = (sequence_len - 1, 15)
+        input_shape = (sequence_len - 1, 4)
+    elif encoding_method == "scalar":
+        input_shape = (sequence_len, 4)
+    elif encoding_method == "simplex_monomer_scalar":
+        input_shape = (sequence_len - 1, 4)
     else:
         raise ValueError(f"Unknown encoding method: {encoding_method}")
 

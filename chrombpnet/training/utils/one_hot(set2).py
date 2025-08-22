@@ -35,16 +35,16 @@ def dna_to_one_hot_real(seqs):
 # ==================== 2) Simplex-monomer ====================
 def dna_to_simplex_monomer(seqs):
     """
-    Classic 3D simplex (regular tetrahedron), ±1.
+    Classic 3D simplex (regular tetrahedron), ~±0.577.
     Output: (batch, L, 3)
     """
     lut = {
-        'A': [1, -1, -1],
-        'C': [-1, 1, -1],
-        'G': [-1, -1, 1],
-        'T': [1, 1, 1],
+        'A': [ 0.577, -0.577, -0.577],
+        'C': [-0.577,  0.577, -0.577],
+        'G': [-0.577, -0.577,  0.577],
+        'T': [ 0.577,  0.577,  0.577],
     }
-    return _encode_with_lut(seqs, lut, dim=4)
+    return _encode_with_lut(seqs, lut, dim=3)
 
 # ==================== 3) Simplex-monomer (rotated) ====================
 def dna_to_simplex_dimer(seqs):

@@ -1,0 +1,4 @@
+Files to change when chaning encoding:
+one_hot.py
+bpnet_model.py
+bigwig_helperl.py

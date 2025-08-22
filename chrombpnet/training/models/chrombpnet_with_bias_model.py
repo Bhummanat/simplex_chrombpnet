@@ -39,6 +39,10 @@ def bpnet_model(filters, n_dil_layers, sequence_len, out_pred_len, model_params)
         input_shape = (sequence_len, 3)
     elif encoding_method == "simplex_dimer":
         input_shape = (sequence_len - 1, 15)
+    elif encoding_method == "scalar":
+        input_shape = (sequence_len, 1)
+    elif encoding_method == "simplex_monomer_scalar":
+        input_shape = (sequence_len, 4)
     else:
         raise ValueError(f"Unknown encoding method: {encoding_method}")
     
@@ -129,6 +133,10 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
         input_shape = (sequence_len, 3)
     elif encoding_method == "simplex_dimer":
         input_shape = (sequence_len - 1, 15)
+    elif encoding_method == "scalar":
+        input_shape = (sequence_len, 1)
+    elif encoding_method == "simplex_monomer_scalar":
+        input_shape = (sequence_len, 4)
     else:
         raise ValueError(f"Unknown encoding method: {encoding_method}")
     
