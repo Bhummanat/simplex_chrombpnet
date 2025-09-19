@@ -60,15 +60,15 @@ def getModelGivenModelOptionsAndWeightInits(args, model_params):
     encoding_method = model_params.get("encoding_method", "one_hot")   # Defaults to one_hot
 
     if encoding_method == "one_hot":
-        input_shape = (sequence_len - 1, 1)
+        input_shape = (sequence_len, 3)
     elif encoding_method == "simplex_monomer":
-        input_shape = (sequence_len, 4)
+        input_shape = (sequence_len, 3)
     elif encoding_method == "simplex_dimer":
-        input_shape = (sequence_len - 1, 4)
+        input_shape = (sequence_len, 3)
     elif encoding_method == "scalar":
-        input_shape = (sequence_len, 4)
+        input_shape = (sequence_len, 3)
     elif encoding_method == "simplex_monomer_scalar":
-        input_shape = (sequence_len - 1, 4)
+        input_shape = (sequence_len, 3)
     else:
         raise ValueError(f"Unknown encoding method: {encoding_method}")
 
